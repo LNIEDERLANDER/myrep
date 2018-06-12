@@ -1,0 +1,129 @@
+---
+title: "TidyData-Wk5"
+author: "Laura Niederlander"
+date: "June 7, 2018"
+output: html_document
+
+github location:
+  readme.md
+  
+---
+
+```{r echo=TRUE}
+
+df <- read.table("./yob2016.txt", sep = ";",
+col.names = c("Names", "Gender", "COUNT_2016"))
+
+head(df)
+```
+
+
+
+```{r}
+library(dplyr)
+# Summarize the data parameters
+#Review the structure
+
+summary(df)
+str(df)
+
+```
+
+```{r}
+#Remove duplicate names from list
+#Rename the dataset y2016
+
+library(repmis)
+library(RCurl)
+
+dffind <- read.table("./yob2016.txt", sep = ";",
+col.names = c("Names", "Gender", "Count_2016"))
+
+grep("yyy", dffind$Names)
+
+#Line 212 - Fionayy
+dffind$Names[212]
+
+y2016 <- subset(x = dffind, Names != "Fionayyy")
+
+grep("yyy", y2016$Names)
+y2016$Names[212]
+
+```
+
+
+
+
+```{r}
+
+y2015 <- read.table("./yob2015.txt", sep = ",",
+col.names = c("Names", "Gender", "Count_2015"))
+str(y2015)
+head(y2015)
+
+```
+
+```{r}
+
+tail(y2015,10)
+
+#Interesting, they are all boys and their are very few childrens names.
+
+```
+```{r}
+
+
+final <- merge(y2016, y2015, no.dups = TRUE)
+
+final<- subset(x = final, ! is.na(final))
+
+grep("NA", final)
+grep("na", final)
+head(final)
+str(final)
+```
+
+
+
+```{r}
+library(tidyverse)
+TTLFinal <- final %>% 
+   mutate(Total = Count_2015 + Count_2016)
+
+
+head(TTLFinal)
+str(TTLFinal)
+
+```
+
+
+
+```{r}
+
+SortFinal <- arrange(TTLFinal, desc(Total))
+
+head(SortFinal)  
+
+```
+
+
+```{r}
+
+Girls <-  filter(SortFinal, Gender == "F")
+
+head(Girls, 10)
+
+
+```
+
+```{r}
+
+#Top10 <- group_by(FilterGirls$FinalCount, length = 10)
+Top10 <- Girls[1:10,]
+
+Top10
+
+write.csv(Top10, "Top10.csv" )
+
+
+```
